@@ -112,7 +112,7 @@ fun HomeScreenLayout() {
                         )
                     )
 
-                    // butto n
+                    // button
                     Button(
                         onClick = {
 
