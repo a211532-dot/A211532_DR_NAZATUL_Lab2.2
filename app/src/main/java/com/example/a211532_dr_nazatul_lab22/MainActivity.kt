@@ -145,7 +145,7 @@ fun HomeScreenLayout() {
                 .padding(16.dp)
         ) {
 
-            // --- DYNAMIC DESTINATION CARD ---
+            // Searched place
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -155,8 +155,7 @@ fun HomeScreenLayout() {
                 Column {
                     Text(text = "Searched Place", color = TextGray, fontSize = 12.sp)
 
-                    // ASSIGNMENT REQUIREMENT: Dynamic UI Update
-                    // This Text uses the 'displayedDestination' variable instead of a hardcoded string
+
                     Text(
                         text = displayedDestination,
                         color = Color.White,
@@ -164,7 +163,7 @@ fun HomeScreenLayout() {
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 8.dp)
                     )
-                    // The time info was successfully removed per your request!
+
                 }
             }
 
