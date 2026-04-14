@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -26,17 +27,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-val DarkBackground = Color(0xFF121E14)
-val CardBackground = Color(0xFF1E2E22)
-val AccentGreen = Color(0xFF4CAF50)
-val TextGray = Color(0xFFAAAAAA)
+import com.example.a211532_dr_nazatul_lab22.ui.theme.GoSmartTheme
+import androidx.compose.animation.animateContentSize
+import androidx.compose.material3.Card
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.CardDefaults
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreenLayout()
+            GoSmartTheme {
+                HomeScreenLayout()
+            }
         }
     }
 }
@@ -45,24 +48,23 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreenLayout() {
 
-
     var searchQuery by remember { mutableStateOf("") }
-
     var displayedDestination by remember { mutableStateOf("Home") }
+    var isCardExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBackground)
+
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
-
         // HEADER
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF2E4F35))
+
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(top = 40.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
         ) {
             Column {
@@ -73,23 +75,20 @@ fun HomeScreenLayout() {
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = "Menu",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = "GoSMART",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
 
-                    // Spacer
                     Box(modifier = Modifier.width(24.dp))
                 }
-
-                // textfield & button
 
                 Row(
                     modifier = Modifier
@@ -97,7 +96,6 @@ fun HomeScreenLayout() {
                         .padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // textfield
                     TextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
@@ -105,30 +103,24 @@ fun HomeScreenLayout() {
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp),
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-
-
-                        )
+                        singleLine = true
                     )
 
-                    // button
                     Button(
                         onClick = {
-
                             if (searchQuery.isNotBlank()) {
                                 displayedDestination = searchQuery
                             }
                         },
                         modifier = Modifier.height(56.dp),
                         shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -137,7 +129,6 @@ fun HomeScreenLayout() {
         }
 
         // BODY
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -146,24 +137,56 @@ fun HomeScreenLayout() {
         ) {
 
             // Searched place
-            Box(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(CardBackground)
-                    .padding(16.dp)
+
+                    .clickable { isCardExpanded = !isCardExpanded }
+
+                    .animateContentSize(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                Column {
-                    Text(text = "Searched Place", color = TextGray, fontSize = 12.sp)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = "Searched Place", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = displayedDestination,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+
+                        // Arrow for details
+                        Icon(
+                            imageVector = if (isCardExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Expand details",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
 
 
-                    Text(
-                        text = displayedDestination,
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+                    if (isCardExpanded) {
+                        Spacer(modifier = Modifier.height(16.dp))
 
+                        Text(
+                            text = " - The route to $displayedDestination is currently clear of traffic.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = " - Taking public transit today saves 1.5kg of CO2 emissions!",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             }
 
@@ -172,7 +195,7 @@ fun HomeScreenLayout() {
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = ". . .", color = TextGray, fontSize = 16.sp)
+                Text(text = ". . .", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
             }
 
             // FAVOURITES
@@ -180,8 +203,8 @@ fun HomeScreenLayout() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Favourites", color = TextGray, fontSize = 14.sp)
-                Text(text = "Add", color = AccentGreen, fontSize = 14.sp)
+                Text(text = "Favourites", color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
+                Text(text = "Add", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
             }
 
             Row(
@@ -191,46 +214,46 @@ fun HomeScreenLayout() {
                 Icon(
                     imageVector = Icons.Default.Place,
                     contentDescription = "Location",
-                    tint = AccentGreen
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Column(modifier = Modifier.padding(start = 16.dp).weight(1f)) {
-                    Text(text = "Wawasan LRT Station", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Wawasan LRT Station",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More",
-                    tint = TextGray
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
 
-
         // NAVIGATION BAR
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(CardBackground)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(top = 12.dp, bottom = 24.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-
             NavigationItem(
                 imageVector = Icons.Default.List,
                 label = "Directions",
-                tint = AccentGreen
+                tint = MaterialTheme.colorScheme.primary
             )
-
             NavigationItem(
                 imageVector = Icons.Default.LocationOn,
                 label = "Stations",
-                tint = TextGray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
             NavigationItem(
                 imageVector = Icons.Default.List,
                 label = "Lines",
-                tint = TextGray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
